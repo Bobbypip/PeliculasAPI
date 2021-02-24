@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
+using PeliculasAPI.Helpers;
 using PeliculasAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.AspNetCore.Http;
 
 namespace PeliculasAPI.Controllers
 {
@@ -37,9 +37,11 @@ namespace PeliculasAPI.Controllers
 
         // GET: api/<ActorsController>
         [HttpGet]
-        public async Task<ActionResult<List<ActorDTO>>> Get()
+        public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
         {
-            var entities = await _context.Actors.ToListAsync();
+            var queryable = _context.Actors.AsQueryable();
+            await HttpContext.InsertPaginationParameters(queryable, paginationDTO.RecordsQuantityPerPage);
+            var entities = await queryable.Paginate(paginationDTO).ToListAsync();
             var dtos = _mapper.Map<List<ActorDTO>>(entities);
             return dtos;
         }
