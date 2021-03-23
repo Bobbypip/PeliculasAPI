@@ -62,22 +62,24 @@ namespace PeliculasAPI.Controllers
         {
             var entity = _mapper.Map<Movie>(movieCreationDTO);
 
-            if (movieCreationDTO.Poster != null)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await movieCreationDTO.Poster.CopyToAsync(memoryStream);
-                    var content = memoryStream.ToArray();
-                    var extension = Path.GetExtension(movieCreationDTO.Poster.FileName);
-                    entity.Poster = await _filesStorage.SaveFile(content, extension, container, movieCreationDTO.Poster.ContentType);
-                }
-            }
+            return Ok();
 
-            _context.Add(entity);
-            await _context.SaveChangesAsync();
-            var dto = _mapper.Map<MovieDTO>(entity);
+            //if (movieCreationDTO.Poster != null)
+            //{
+            //    using (var memoryStream = new MemoryStream())
+            //    {
+            //        await movieCreationDTO.Poster.CopyToAsync(memoryStream);
+            //        var content = memoryStream.ToArray();
+            //        var extension = Path.GetExtension(movieCreationDTO.Poster.FileName);
+            //        entity.Poster = await _filesStorage.SaveFile(content, extension, container, movieCreationDTO.Poster.ContentType);
+            //    }
+            //}
 
-            return new CreatedAtRouteResult("getMovie", new { id = entity.Id }, dto);
+            //_context.Add(entity);
+            //await _context.SaveChangesAsync();
+            //var dto = _mapper.Map<MovieDTO>(entity);
+
+            //return new CreatedAtRouteResult("getMovie", new { id = entity.Id }, dto);
         }
 
         // PUT api/<MoviesController>/5

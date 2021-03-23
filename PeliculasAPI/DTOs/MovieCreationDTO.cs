@@ -18,5 +18,7 @@ namespace PeliculasAPI.DTOs
         [FileWeightValidation(maxWeightInMegaBytes: 4)]
         [FileTypeValidation(fileTypeGroup: FileTypeGroup.Image)]
         public IFormFile Poster { get; set; }
+
+        public List<int> GenresIds { get; set; }
     }
 }
