@@ -15,5 +15,7 @@ namespace PeliculasAPI.Entities
         public bool OnCinemas { get; set; }
         public DateTime ReleaseDate { get; set; }
         public string Poster { get; set; }
-    }
+        public List<MoviesActors> MoviesActors { get; set; }
+        public List<MoviesGenres> MoviesGenres { get; set; }
+     }
 }
