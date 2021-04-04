@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
+using PeliculasAPI.Helpers;
 using PeliculasAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace PeliculasAPI.Controllers
@@ -36,9 +38,67 @@ namespace PeliculasAPI.Controllers
 
         // GET: MoviesController
         [HttpGet]
-        public async Task<ActionResult<List<MovieDTO>>> Get()
+        public async Task<ActionResult<IndexMoviesDTO>> Get()
         {
-            var movies = await _context.Movies.ToListAsync();
+            var top = 5;
+            var today = DateTime.Today;
+
+            var commingReleases = await _context.Movies
+                .Where(x => x.ReleaseDate > today)
+                .OrderBy(x => x.ReleaseDate)
+                .Take(top)
+                .ToListAsync();
+
+            var onCinemas = await _context.Movies
+                .Where(x => x.OnCinemas)
+                .Take(top)
+                .ToListAsync();
+
+            var result = new IndexMoviesDTO();
+            result.FutureReleases = _mapper.Map<List<MovieDTO>>(commingReleases);
+            result.OnCinemas = _mapper.Map<List<MovieDTO>>(onCinemas);
+
+            return result;
+
+            //var movies = await _context.Movies.ToListAsync();
+            //return _mapper.Map<List<MovieDTO>>(movies);
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<MovieDTO>>> Filter([FromQuery] FilterMoviesDTO filterMoviesDTO)
+        {
+            var moviesQueryable = _context.Movies.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filterMoviesDTO.Title))
+            {
+                moviesQueryable = moviesQueryable.Where(x => x.Title.Contains(filterMoviesDTO.Title));
+            }
+
+            if (filterMoviesDTO.OnCinemas)
+            {
+                moviesQueryable = moviesQueryable.Where(x => x.OnCinemas);
+            }
+
+            if (filterMoviesDTO.FutureReleases)
+            {
+                var today = DateTime.Today;
+                moviesQueryable = moviesQueryable.Where(x => x.ReleaseDate > today);
+            }
+
+            if (filterMoviesDTO.GenreId != 0)
+            {
+                moviesQueryable = moviesQueryable
+                    .Where(x => x.MoviesGenres.Select(y => y.GenreId)
+                    .Contains(filterMoviesDTO.GenreId));
+            }
+
+            await HttpContext.InsertPaginationParameters(moviesQueryable,
+                filterMoviesDTO.recordsQuantityPerPage);
+
+            var movies = await moviesQueryable
+                .Paginate(filterMoviesDTO.Pagination)
+                .ToListAsync();
+
             return _mapper.Map<List<MovieDTO>>(movies);
         }
 
