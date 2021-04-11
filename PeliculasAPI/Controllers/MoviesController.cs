@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using Microsoft.Extensions.Logging;
 
 namespace PeliculasAPI.Controllers
 {
@@ -23,17 +25,20 @@ namespace PeliculasAPI.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IFilesStorage _filesStorage;
+        private readonly ILogger<MoviesController> _logger;
         private readonly string container = "movies";
 
         public MoviesController(
             ApplicationDbContext context,
             IMapper mapper,
-            IFilesStorage filesStorage
+            IFilesStorage filesStorage,
+            ILogger<MoviesController> logger
             )
         {
             _context = context;
             _mapper = mapper;
             _filesStorage = filesStorage;
+            _logger = logger;
         }
 
         // GET: MoviesController
@@ -90,6 +95,35 @@ namespace PeliculasAPI.Controllers
                 moviesQueryable = moviesQueryable
                     .Where(x => x.MoviesGenres.Select(y => y.GenreId)
                     .Contains(filterMoviesDTO.GenreId));
+            }
+
+            if (!string.IsNullOrEmpty(filterMoviesDTO.SortField))
+            {
+                var orderType = filterMoviesDTO.AscendingOrder ? "ascending" : "descending";
+
+                try
+                {
+                    // String Interpolation
+                    moviesQueryable = moviesQueryable.OrderBy($"{filterMoviesDTO.SortField} {orderType}");
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex.Message, ex);
+                }
+
+                #region OrderBy with if
+                //if (filterMoviesDTO.SortField == "title")
+                //{
+                //    if (filterMoviesDTO.AscendingOrder)
+                //    {
+                //        moviesQueryable = moviesQueryable.OrderBy(x => x.Title);
+                //    }
+                //    else
+                //    {
+                //        moviesQueryable = moviesQueryable.OrderByDescending(x => x.Title);
+                //    }
+                //}
+                #endregion
             }
 
             await HttpContext.InsertPaginationParameters(moviesQueryable,

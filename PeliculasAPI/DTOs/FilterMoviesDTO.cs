@@ -18,5 +18,7 @@ namespace PeliculasAPI.DTOs
         public int GenreId { get; set; }
         public bool OnCinemas { get; set; }
         public bool FutureReleases { get; set; }
+        public string SortField { get; set; }
+        public bool AscendingOrder { get; set; } = true;
     }
 }
