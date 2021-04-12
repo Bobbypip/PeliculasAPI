@@ -14,7 +14,6 @@ namespace PeliculasAPI.Controllers
     [Route("api/genres")]
     public class GenresController : CustomBaseController
     {
-        //Soy Revert
         public GenresController(
             ApplicationDbContext context,
             IMapper mapper)
