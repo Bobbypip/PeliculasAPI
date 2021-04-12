@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace PeliculasAPI.Controllers
 {
+    //real based
     public class CustomBaseController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
