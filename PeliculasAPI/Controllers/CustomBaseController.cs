@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PeliculasAPI.DTOs;
 using PeliculasAPI.Entities;
+using PeliculasAPI.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -29,6 +32,14 @@ namespace PeliculasAPI.Controllers
             var dtos = _mapper.Map<List<TDTO>>(entities);
 
             return dtos;
+        }
+
+        protected async Task<List<TDTO>> Get<TEntity, TDTO>(PaginationDTO paginationDTO) where TEntity : class
+        {
+            var queryable = _context.Actors.AsQueryable();
+            await HttpContext.InsertPaginationParameters(queryable, paginationDTO.RecordsQuantityPerPage);
+            var entities = await queryable.Paginate(paginationDTO).ToListAsync();
+            return _mapper.Map<List<TDTO>>(entities);
         }
 
         protected async Task<ActionResult<TDTO>> Get<TEntity, TDTO>(int id) where TEntity : class, IId
@@ -68,6 +79,44 @@ namespace PeliculasAPI.Controllers
             var entity = _mapper.Map<TEntity>(creationDTO);
             entity.Id = id;
             _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        protected async Task<ActionResult> Patch<TEntity, TDTO>
+            (
+            int id,
+            JsonPatchDocument<TDTO> patchDocument
+            )
+            where TDTO : class
+            where TEntity : class, IId
+        {
+            if(patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var entityDB = await _context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
+
+            if (entityDB == null)
+            {
+                return NotFound();
+            }
+
+            var entityDTO = _mapper.Map<TDTO>(entityDB);
+
+            patchDocument.ApplyTo(entityDTO, ModelState);
+
+            var isValid = TryValidateModel(entityDTO);
+
+            if (!isValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(entityDTO, entityDB);
+
             await _context.SaveChangesAsync();
 
             return NoContent();
