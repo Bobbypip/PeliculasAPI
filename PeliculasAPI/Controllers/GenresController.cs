@@ -16,7 +16,6 @@ namespace PeliculasAPI.Controllers
     {
         //Soy Revert
         //Soy Revert 2
-        //Soy Revert 3
         public GenresController(
             ApplicationDbContext context,
             IMapper mapper)
