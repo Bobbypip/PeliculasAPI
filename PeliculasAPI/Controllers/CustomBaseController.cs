@@ -13,10 +13,10 @@ namespace PeliculasAPI.Controllers
     //real based
     public class CustomBaseController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
+        protected readonly ApplicationDbContext _context;
+        protected readonly IMapper _mapper;
 
-        public CustomBaseController
+        protected CustomBaseController
             (
             ApplicationDbContext context,
             IMapper mapper

@@ -27,7 +27,7 @@ namespace PeliculasAPI
                 .HasKey(x => new { x.MovieId, x.MovieTheaterId });
 
             SeedData(modelBuilder);
-
+            
             base.OnModelCreating(modelBuilder);
         }
         #endregion
