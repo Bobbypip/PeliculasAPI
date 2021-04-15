@@ -32,9 +32,10 @@ namespace PeliculasAPI
 
             services.AddControllers()
                 .AddNewtonsoftJson();
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-                );
+            services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+            sqlServerOptions => sqlServerOptions.UseNetTopologySuite()
+            ));
             services.AddTransient<IFilesStorage, LocalFileStorage>();
             services.AddHttpContextAccessor();
             services.AddSwaggerGen(c =>

@@ -22,8 +22,6 @@ namespace PeliculasAPI.Controllers
     [Route("api/movies")]
     public class MoviesController : CustomBaseController
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
         private readonly IFilesStorage _filesStorage;
         private readonly ILogger<MoviesController> _logger;
         private readonly string container = "movies";
@@ -37,8 +35,6 @@ namespace PeliculasAPI.Controllers
             )
             : base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
             _filesStorage = filesStorage;
             _logger = logger;
         }
