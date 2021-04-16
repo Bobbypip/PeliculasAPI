@@ -19,8 +19,6 @@ namespace PeliculasAPI.Controllers
     [Route("api/actors")]
     public class ActorsController : CustomBaseController
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
         private readonly IFilesStorage _filesStorage;
         private readonly string container = "actors";
 
@@ -30,8 +28,6 @@ namespace PeliculasAPI.Controllers
             IFilesStorage filesStorage
             ): base(context, mapper)
         {
-            _context = context;
-            _mapper = mapper;
             _filesStorage = filesStorage;
         }
 
