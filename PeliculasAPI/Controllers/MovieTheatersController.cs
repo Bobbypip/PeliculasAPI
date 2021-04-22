@@ -47,11 +47,6 @@ namespace PeliculasAPI.Controllers
         {
             var userLocation = _geometryFactory.CreatePoint(new Coordinate(filter.Longitude, filter.Latitude));
 
-            //var seattle = new Point(-122.333056, 47.609722) { SRID = 4326 };
-            //var redmond = new Point(-122.123889, 47.669444) { SRID = 4326 };
-            //var distanceInDegrees = seattle.Distance(redmond);
-            //var distanceInMeters = seattle.ProjectTo(2855).Distance(redmond.ProjectTo(2855));
-
             var movieTheaters = await _context.MovieTheaters
                 .OrderBy(x => x.Location.Distance(userLocation))
                 .Where(x => x.Location.IsWithinDistance(userLocation, filter.DistanceInKM * 1000))
