@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 using PeliculasAPI.Entities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PeliculasAPI
 {
@@ -27,13 +26,24 @@ namespace PeliculasAPI
                 .HasKey(x => new { x.MovieId, x.MovieTheaterId });
 
             SeedData(modelBuilder);
-            
+
             base.OnModelCreating(modelBuilder);
         }
         #endregion
 
         private void SeedData(ModelBuilder modelBuilder)
         {
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+
+            modelBuilder.Entity<MovieTheater>()
+                .HasData(new List<MovieTheater>
+                {
+                    //new SalaDeCine{Id = 1, Nombre = "Agora", Ubicacion = geometryFactory.CreatePoint(new Coordinate(-69.9388777, 18.4839233)) },
+                    new MovieTheater { Id = 4, Name = "Sambil", Location = geometryFactory.CreatePoint(new Coordinate(-69.9118804, 18.4826214)) },
+                    new MovieTheater{ Id = 5, Name = "Megacentro", Location = geometryFactory.CreatePoint(new Coordinate(-69.856427, 18.506934)) },
+                    new MovieTheater{ Id = 6, Name = "Village East Cinema", Location = geometryFactory.CreatePoint(new Coordinate(-73.986227, 40.730898)) }
+                });
+
             var aventura = new Genre() { Id = 4, Name = "Aventura" };
             var animation = new Genre() { Id = 5, Name = "Animación" };
             var suspenso = new Genre() { Id = 6, Name = "Suspenso" };
