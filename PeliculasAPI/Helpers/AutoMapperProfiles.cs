@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using PeliculasAPI.DTOs;
@@ -17,6 +18,8 @@ namespace PeliculasAPI.Helpers
             //Genre
             CreateMap<Genre, GenreDTO>().ReverseMap();
             CreateMap<Genre, GenreCreationDTO>().ReverseMap();
+
+            CreateMap<IdentityUser, UserDTO>();
 
             //MovieTheater
             CreateMap<MovieTheater, MovieTheaterDTO >()
