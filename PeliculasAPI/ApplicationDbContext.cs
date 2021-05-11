@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using PeliculasAPI.Entities;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace PeliculasAPI
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -33,6 +36,45 @@ namespace PeliculasAPI
 
         private void SeedData(ModelBuilder modelBuilder)
         {
+            var adminRoleId = "6b86b9a8-792f-4ba9-b6f8-3b48facf9953";
+            var userAdminId = "ffbcd784-f1e6-44ec-8cf4-bc44cdcb8379";
+
+            var adminRole = new IdentityRole()
+            {
+                Id = adminRoleId,
+                Name = "Admin",
+                NormalizedName = "Admin"
+            };
+
+            var passwordHasher = new PasswordHasher<IdentityUser>();
+
+            var username = "roroal314@gmail.com";
+
+            var userAdmin = new IdentityUser()
+            {
+                Id = userAdminId,
+                UserName = username,
+                NormalizedUserName = username,
+                Email = username,
+                NormalizedEmail = username,
+                PasswordHash = passwordHasher.HashPassword(null, "1234565!")
+            };
+
+            //modelBuilder.Entity<IdentityRole>()
+            //    .HasData(adminRole);
+
+            //modelBuilder.Entity<IdentityUser>()
+            //    .HasData(userAdmin);
+
+            //modelBuilder.Entity<IdentityUserClaim<string>>()
+            //    .HasData(new IdentityUserClaim<string>()
+            //    {
+            //        Id = 1,
+            //        ClaimType = ClaimTypes.Role,
+            //        UserId = userAdminId,
+            //        ClaimValue = "Admin"
+            //    });
+
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
             modelBuilder.Entity<MovieTheater>()
