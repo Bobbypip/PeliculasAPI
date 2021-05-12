@@ -183,5 +183,6 @@ namespace PeliculasAPI
         public DbSet<MoviesGenres> MoviesGenres { get; set; }
         public DbSet<MovieTheater> MovieTheaters { get; set; }
         public DbSet<MoviesMovieTheaters> MoviesMovieTheaters { get; set; }
+        public DbSet<Review> Reviews {get; set;}
     }
 }
